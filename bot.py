@@ -2,14 +2,17 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-TOKEN = "<YOUR TOKEN HERE>"
+# Client secret token
+TOKEN = "<YOUR_TOKEN_HERE>"
 
+# Sets prefix and removes the default help command so we can overwrite it
 client = commands.Bot(command_prefix='.')
 client.remove_command('help')
 
 
 @client.event
 async def on_ready():
+    # Set game activity to a custom message
     activity = discord.Game(name="with da images!")
     await client.change_presence(status=discord.Status.online, activity=activity)
     print('[IMGBOT] Bot started up..."')
@@ -17,6 +20,11 @@ async def on_ready():
 
 @client.command()
 async def help(ctx, arg: str = ''):
+    """
+    :param ctx: Message object
+    :param arg: Argument for setting language
+    :return: None
+    """
     if arg == 'hu':
         embed = discord.Embed(title="**Random Kép Bot Segítség**")
         embed.add_field(name='.rndimg <size>', value='Küld egy véletlenszerű négyzet alakú képet a megadott mérettel.')
@@ -32,6 +40,12 @@ async def help(ctx, arg: str = ''):
 
 @client.command()
 async def rndimg(ctx, width: str, height: str = ''):
+    """
+    :param ctx: Message Object
+    :param width: Image width used for the image (required)
+    :param height: Image height used for the image (optional)
+    :return: A random image
+    """
     if width != '' and width.isnumeric() and height == '':
         async with aiohttp.ClientSession() as session:
             image = await session.get(f"https://picsum.photos/{width}")
@@ -49,4 +63,5 @@ async def rndimg(ctx, width: str, height: str = ''):
         await ctx.send(embed=embed)
 
 
+# Log the client in with the set token
 client.run(TOKEN)
